@@ -70,30 +70,101 @@ $reviews = getReviews();
           </thead>
           <tbody>
             <?php
-         if(isset($_POST['filter'])){
-          //  Get input values
-           $rating = $_POST['rating'];
-           $rating_number = $_POST['rating_number'];
-           $date = $_POST['date'];
-           $text = $_POST['text'];
+if (isset($_POST['filter'])) {
 
+    //  Get input values
+    $rating = $_POST['rating'];
+    $rating_number = $_POST['rating_number'];
+    $date = $_POST['date'];
+    $text = $_POST['text'];
 
-          //  Associate input values with json data
-          foreach($reviews as $review){
-            $rating = $review['rating'];
-            $date  = $review['reviewCreatedOnDate'];
-            $text = $review['reviewFullText'];
+    //  Order json data according to input
 
-            ?>
+    // Order reviews and date if text is not set as priority
+   if ($text == 'no') {
+       if ($rating == 'lowest') {
+           $sort = [];
+           foreach ($reviews as $k => $v) {
+               $sort['rating'][$k] = $v['rating'];
+           }
+           array_multisort($sort['rating'], SORT_ASC, $reviews);
+       }
+        elseif ($date == 'newest') 
+         {
+            $sort = [];
+            foreach ($reviews as $k => $v) {
+                $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
+            }
+            array_multisort($sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
+        } 
+         if($rating == 'lowest' && $date == 'newest'){
+          $sort = [];
+          foreach ($reviews as $k => $v) {
+              $sort['rating'][$k] = $v['rating'];
+              $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
+          }
+          array_multisort($sort['rating'], SORT_ASC, $sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
+        }  
+   }
+
+   // Order reviews and date if text is set as priority
+    if($text == 'yes'){
+      if ($rating == 'lowest') {
+        $sort = [];
+        foreach ($reviews as $k => $v) {
+            $sort['rating'][$k] = $v['rating'];
+        }
+        array_multisort($sort['rating'], SORT_ASC, $reviews);
+    } elseif ($date == 'newest') 
+      {
+         $sort = [];
+         foreach ($reviews as $k => $v) {
+             $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
+         }
+         array_multisort($sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
+     } 
+      if($rating == 'lowest' && $date == 'newest'){
+       $sort = [];
+       foreach ($reviews as $k => $v) {
+           $sort['rating'][$k] = $v['rating'];
+           $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
+       }
+       array_multisort($sort['rating'], SORT_ASC, $sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
+     }  
+    }
+    
+    foreach ($reviews as $review) {
+        // Filter reviews by rating
+        if ($rating_number == 2 && $review['rating'] < 2) {
+            unset($review['rating']);
+        } elseif ($rating_number == 3 && $review['rating'] < 3) {
+            unset($review['rating']);
+        } elseif ($rating_number == 4 && $review['rating'] < 4) {
+            unset($review['rating']);
+        } elseif ($rating_number == 5 && $review['rating'] < 5) {
+            unset($review['rating']);
+        }
+
+        //  Associate input values with json data
+        if (!empty($review['rating'])) {
+            $filter_rating = $review['rating'];
+            $filter_date = $review['reviewCreatedOnDate'];
+            $filter_text = $review['reviewFullText'];
+        }
+
+        
+        ?>
             <tr>
-              <td><?=$text?></td>
-              <td><?=$rating?></td>
-              <td><?=$date?></td>
+            <?php if(isset($filter_text) && isset($filter_rating) && isset($filter_date)) :?>
+              <td><?=$filter_text?></td>
+              <td><?=$filter_rating?></td>
+              <td><?=$filter_date?></td>
+              <?php endif;?>
             </tr>
             <?php
-          }
-         }
-         ?>
+}
+}
+?>
           </tbody>
         </table>
       </div>
