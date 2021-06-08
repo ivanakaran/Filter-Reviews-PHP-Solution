@@ -78,9 +78,9 @@ if (isset($_POST['filter'])) {
 
     //  Order json data according to input
 
-    // Order reviews and date if text is not set as priority
-    if ($text == 'no') {
-        if ($rating == 'lowest') {
+    // Order input by reviews and date 
+    if ($text == 'no' xor $text == 'yes') {
+        if ($rating == 'lowest' ) {
             $sort = [];
             foreach ($reviews as $k => $v) {
                 $sort['rating'][$k] = $v['rating'];
@@ -103,30 +103,6 @@ if (isset($_POST['filter'])) {
         }
     }
 
-    // Order reviews and date if text is set as priority
-    if ($text == 'yes') {
-        if ($rating == 'lowest') {
-            $sort = [];
-            foreach ($reviews as $k => $v) {
-                $sort['rating'][$k] = $v['rating'];
-            }
-            array_multisort($sort['rating'], SORT_ASC, $reviews);
-        } elseif ($date == 'newest') {
-            $sort = [];
-            foreach ($reviews as $k => $v) {
-                $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
-            }
-            array_multisort($sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
-        }
-        if ($rating == 'lowest' && $date == 'newest') {
-            $sort = [];
-            foreach ($reviews as $k => $v) {
-                $sort['rating'][$k] = $v['rating'];
-                $sort['reviewCreatedOnDate'][$k] = $v['reviewCreatedOnDate'];
-            }
-            array_multisort($sort['rating'], SORT_ASC, $sort['reviewCreatedOnDate'], SORT_DESC, $reviews);
-        }
-    }
 
     foreach ($reviews as $review) {
         // Filter reviews by rating
